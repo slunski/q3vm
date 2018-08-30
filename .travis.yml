@@ -2,19 +2,19 @@ os:
   - linux
   - osx
 language: c
-addons:
+compiler:
+  - gcc
   - clang
-install: 
-  # cppcheck
-  - sudo apt-get install -qq cppcheck
-  - sudo apt-get install -qq valgrind
-  - sudo apt-get install -qq doxygen
-  - sudo apt-get install -qq graphviz
+
+addons:
+  apt:
+    - cppcheck
+    - valgrind
+    - doxygen
+    - graphviz
+
 script:
-  - make doxygen
-  - make valgrind
-  - make analysis
-  - make clean
-  - make test
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make doxygen && make valgrind && make analysis && make clean && make test; fi
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
